@@ -3,5 +3,6 @@
 ## Установка зависимостей и запуск
 ```bash
 $ pip install -r ./requirements.txt
+$ mkdir orders
 $ python main.py
 ```
