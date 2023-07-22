@@ -97,14 +97,16 @@ class Parser():
 
                     ready_dict[counter] = ready_order
         fl_tasks = fl_parser_link()
+        fl_file_add = False
         for fl_task in fl_tasks:
-            fl_task_page = BeautifulSoup(get_response(fl_task).text, 'html.parser')
+            fl_task_page = BeautifulSoup(get_response(fl_task, fl_page=True).text, 'html.parser')
             fl_title = fl_task_page.find('h1', class_='text-1 d-flex align-items-center')
             fl_description = fl_task_page.find('div', class_='b-layout__txt_padbot_20')
             fl_date_published = fl_task_page.find('div', class_='b-layout__txt b-layout__txt_padbot_30 mt-32')
             fl_created_acc = fl_task_page.find('div', class_='mt-8 text-7')
             fl_price = ' '.join(fl_task_page.find('div', class_='py-32 text-right unmobile flex-shrink-0 ml-auto').text.replace('\n', '').split()) if fl_task_page.find('div', class_='py-32 text-right unmobile flex-shrink-0 ml-auto') else None
-            fl_file_add = True if len(fl_task_page.find_all('span', class_='text-gray-dark text-7')) > 0 else False
+            if fl_task_page.find('div', class_='b-layout mt-22 base-attach-class') is not None:
+                fl_file_add = True
             positive_feedback = int(''.join(fl_task_page.find('span', class_='text-8 b-layout__txt_color_6db335').text.split())) if fl_task_page.find('span', class_='text-8 b-layout__txt_color_6db335') else 0
             negative_feedback = int(''.join(fl_task_page.find('span', class_='text-8 b-layout__txt_color_c10600').text.split())) if fl_task_page.find('span', class_='text-8 b-layout__txt_color_c10600') else 0
             fl_technologies =[tech.text.replace('\n', '').split('/') for tech in fl_task_page.find_all('div', class_='text-5 mb-4 b-layout__txt_padbot_20')]
