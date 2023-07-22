@@ -1,2 +1,3 @@
 env
-orders
+*.json
+__pycache__
