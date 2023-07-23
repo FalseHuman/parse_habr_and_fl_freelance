@@ -1,4 +1,5 @@
 from fr_parser import Parser
+import time, datetime
 
 
 def main() -> None:
@@ -7,4 +8,8 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    diaposon_second = 600 # Нужно чтобы корректно работал sleep 10 минут
+    while True:
+        main()
+        print('sleep', datetime.datetime.now())
+        time.sleep(diaposon_second)

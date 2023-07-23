@@ -65,7 +65,7 @@ class Parser():
                     active_emploer = static_emploer[1].find('div', class_='value').text
                     find_freelance = static_emploer[2].find('div', class_='value').text
                     arbitage_emploer = static_emploer[3].find('div', class_='value').text.replace(' ', '').replace('\n', '')
-                    fr_created_acc = static_emploer[5].find('div', class_='value').text.replace('\n', '')
+                    fr_created_acc = task_page.find_all('div', class_='divider row')[-1].text.replace('\n', ' ') if task_page.find_all('div', class_='divider row') else "Нет информации о регистрации"
                     feedback = int(static_emploer[4].find('div', class_='value').text.split('/')[0]) - int(static_emploer[4].find('div', class_='value').text.split('/')[1])
                     
                     file_add =  True if task_page.find_all('dl', class_='user-params') else False
@@ -137,8 +137,4 @@ class Parser():
 
 
     def start_parse(self) -> None:
-        diaposon_second = 600 # Нужно чтобы корректно работал sleep 10 минут
-        while True:
-            self._main(self.diapason)
-            print('sleep', datetime.datetime.now())
-            time.sleep(diaposon_second)
+        self._main(self.diapason)

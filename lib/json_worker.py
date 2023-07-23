@@ -88,6 +88,7 @@ class Json_worker:
                     data[d]= data_json[d]
                 else:
                     date_published = datetime.strptime(data_json[d]['date_publised'], "%Y-%m-%d %H:%M:%S")
+                    print(start_diaposon.minute, date_published.minute, end_diaposon.minute )
                     if start_diaposon.minute <= date_published.minute <=end_diaposon.minute and start_diaposon.hour == date_published.hour:
                         data[d]= data_json[d]
                     elif date_published.minute > 50 and start_diaposon.hour == date_published.hour:
