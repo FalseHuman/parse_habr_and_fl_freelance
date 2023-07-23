@@ -3,7 +3,6 @@ import datetime
 import time
 import json
 
-import requests
 from bs4 import BeautifulSoup
 from dateutil.parser import parse #python-dateutil
 
@@ -66,6 +65,7 @@ class Parser():
                     active_emploer = static_emploer[1].find('div', class_='value').text
                     find_freelance = static_emploer[2].find('div', class_='value').text
                     arbitage_emploer = static_emploer[3].find('div', class_='value').text.replace(' ', '').replace('\n', '')
+                    fr_created_acc = static_emploer[5].find('div', class_='value').text.replace('\n', '')
                     feedback = int(static_emploer[4].find('div', class_='value').text.split('/')[0]) - int(static_emploer[4].find('div', class_='value').text.split('/')[1])
                     
                     file_add =  True if task_page.find_all('dl', class_='user-params') else False
@@ -89,6 +89,7 @@ class Parser():
                             'avatar': true_avatar,
                             'username_link': username_link,
                             'username_info': username_info.replace('\n', ' '),
+                            'fr_created_acc': fr_created_acc,
                             'verification': verification,
                             'orders': int(active_emploer) + int(find_freelance.replace('\n', '')) + int(arbitage_emploer),
                             'feedback': feedback
@@ -116,7 +117,6 @@ class Parser():
                         'description': fl_description.text.replace('\n', '').strip(),
                         'price': fl_price,
                         'fl_true': True,
-                        'fl_created_acc': fl_created_acc.text.replace('\n', '').strip(),
                         'date_publised': ' '.join(fl_date_published.text.replace('\n', '').split()),
                         'technologies': fl_technologies,
                         'file_add': fl_file_add,
@@ -125,6 +125,7 @@ class Parser():
                             'avatar': False,
                             'username_link': None,
                             'username_info': None,
+                            'fl_created_acc': fl_created_acc.text.replace('\n', '').strip(),
                             'verification': None,
                             'orders': None,
                             'feedback': positive_feedback - negative_feedback
