@@ -3,6 +3,7 @@ from datetime import datetime
 from os import path
 from calculate_parser_time import caluculate_diapason
 from pytz import timezone
+from config import token
 import requests
 
 
@@ -24,6 +25,20 @@ class Json_worker:
         with open(path.join('orders', self.filename), 'w', encoding='utf-8') as updated_json_file:
             json.dump(py_dict, updated_json_file, indent=4, ensure_ascii=False)
 
+    def load_to_dump(self) -> None:
+        try:
+            with open(path.join('orders', self.filename), 'r', encoding='utf-8') as json_file:
+                py_dict = json.load(json_file)
+                return py_dict
+        except FileNotFoundError:
+            self.create_json_file()
+            py_dict = []
+            with open(path.join('orders', self.filename), 'w', encoding='utf-8') as updated_json_file:
+                json.dump([], updated_json_file, indent=4, ensure_ascii=False)
+            with open(path.join('orders', self.filename), 'r', encoding='utf-8') as json_file:
+                py_dict = json.load(json_file)
+                return py_dict
+
     def dump_dict(self, data: dict) -> None:
         with open(path.join('orders', self.filename), 'w', encoding='utf-8') as updated_json_file:
             json.dump(data, updated_json_file, indent=4, ensure_ascii=False)
@@ -36,7 +51,7 @@ class Json_worker:
         if not self.filename.endswith('.json'):
             self.filename += '.json'
     
-    def send_message_telegram(self, token: str, chat_id: str, filename=None) -> None:
+    def send_message_telegram(self, token: str, chat_id: int, filename=None) -> None:
         # requests.post(
         #     f'https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=test')
         # print('test')
@@ -79,4 +94,9 @@ class Json_worker:
                         data[d]= data_json[d]
                 data_json[d].pop('fl_true', None) 
             self.dump_dict(data)
-        self.send_message_telegram('6386900425:AAGXK-TufHnCtOscI6T5vijRrBw44wBzLMw', '741541899', self.filename)
+        
+        #Отправка сообщений в telegram
+        with open(path.join('orders', 'telegram_chat_id.json'), 'r', encoding='utf-8') as json_file:
+                telegram_ids = json.load(json_file)
+                for telegram_id in telegram_ids:
+                    self.send_message_telegram(token, telegram_id['user_chat_id'], self.filename)
