@@ -89,7 +89,7 @@ class Parser():
                             'client_name': username.text.replace('\n', ''),
                             'avatar': true_avatar,
                             'username_link': username_link,
-                            'username_info': username_info.replace('\n', ' '),
+                            'username_info': username_info.replace('\n', ' ') if len(username_info) > 1 else None,
                             'fr_created_acc': fr_created_acc,
                             'verification': verification,
                             'orders': int(active_emploer) + int(find_freelance.replace('\n', '')) + int(arbitage_emploer),
