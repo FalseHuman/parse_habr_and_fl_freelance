@@ -4,9 +4,9 @@ from calculate_parser_time import caluculate_diapason
 import pytz
 from time import mktime
 
-def fl_parser_link():
+def fl_parser_link(sleep_time):
     categories_parse = ['2', '3', '5', '23']
-    start_time, end_time = caluculate_diapason(datetime.now(pytz.utc), 10)
+    start_time, end_time = caluculate_diapason(sleep_time(pytz.utc), 10)
     links = []
     for category in categories_parse:
         d = feedparser.parse(f'https://www.fl.ru/rss/projects.xml?category={category}')

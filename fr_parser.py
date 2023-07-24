@@ -14,23 +14,24 @@ from fl_parser import fl_parser_link
 
 
 class Parser():
-    def __init__(self, url: str, filter_url: str = '', diapason: int = 10) -> None:
+    def __init__(self, url: str, sleep_time, filter_url: str = '', diapason: int = 10) -> None:
         self.url = url
+        self.sleep_time = sleep_time
         self.filter_url = filter_url
         self.ready_orders_dict = {}
         self.diapason = diapason
-        self.pag = Pagination(self.url, self.filter_url)
+        self.pag = Pagination(self.url, self.filter_url, pagination=False)
 
         super().__init__()
 
         # self._main(self.diapason)
 
-    def _main(self, diaposon) -> None:
+    def _main(self) -> None:
         Validation(self.url)
         ready_dict = self._parse()
         json_result = Json_worker('result')
         json_result.dump_dict(ready_dict)
-        json_result.check_caluclate_parser_time(diaposon)
+        json_result.check_caluclate_parser_time(self.diapason, self.sleep_time)
 
     def _parse(self) -> None:
         counter = 0
@@ -97,7 +98,7 @@ class Parser():
                     }
 
                     ready_dict[counter] = ready_order
-        fl_tasks = fl_parser_link()
+        fl_tasks = fl_parser_link(self.sleep_time)
         fl_file_add = False
         for fl_task in fl_tasks:
             fl_task_page = BeautifulSoup(get_response(fl_task, fl_page=True).text, 'html.parser')
@@ -112,12 +113,12 @@ class Parser():
             negative_feedback = int(''.join(fl_task_page.find('span', class_='text-8 b-layout__txt_color_c10600').text.split())) if fl_task_page.find('span', class_='text-8 b-layout__txt_color_c10600') else 0
             fl_technologies =[tech.text.replace('\n', '').split('/') for tech in fl_task_page.find_all('div', class_='text-5 mb-4 b-layout__txt_padbot_20')]
             ready_order = {
-                        'task_name': fl_title.text.replace('\n', '').strip(),
+                        'task_name': fl_title.text.replace('\n', '').strip() if fl_title else 'Нет информации',
                         'task_link': fl_task,
-                        'description': fl_description.text.replace('\n', '').strip(),
+                        'description': fl_description.text.replace('\n', '').strip() if fl_description else 'Нет информации',
                         'price': fl_price,
                         'fl_true': True,
-                        'date_publised': ' '.join(fl_date_published.text.replace('\n', '').split()),
+                        'date_publised': ' '.join(fl_date_published.text.replace('\n', '').split()) if fl_date_published else 'Нет информации',
                         'technologies': fl_technologies,
                         'file_add': fl_file_add,
                         'client_info': {
@@ -125,7 +126,7 @@ class Parser():
                             'avatar': False,
                             'username_link': None,
                             'username_info': None,
-                            'fl_created_acc': fl_created_acc.text.replace('\n', '').strip(),
+                            'fl_created_acc': fl_created_acc.text.replace('\n', '').strip() if fl_created_acc else ' Нет информации',
                             'verification': None,
                             'orders': None,
                             'feedback': positive_feedback - negative_feedback
@@ -137,4 +138,4 @@ class Parser():
 
 
     def start_parse(self) -> None:
-        self._main(self.diapason)
+        self._main()

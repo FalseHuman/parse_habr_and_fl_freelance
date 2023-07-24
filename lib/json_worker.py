@@ -76,9 +76,9 @@ class Json_worker:
                         f'https://api.telegram.org/bot{token}/sendMessage', data=data
                     )
 
-    def check_caluclate_parser_time(self, diaposon) -> None:
+    def check_caluclate_parser_time(self, diaposon, sleep_time) -> None:
         zone = 'Europe/Moscow'
-        start_diaposon, end_diaposon = caluculate_diapason(datetime.now(timezone(zone)), diaposon)
+        start_diaposon, end_diaposon = caluculate_diapason(sleep_time(timezone(zone)), diaposon)
         data = {}
         with open(path.join('orders', self.filename), 'r', encoding='utf-8') as json_file:
             data_json = json.load(json_file)
@@ -88,7 +88,7 @@ class Json_worker:
                     data[d]= data_json[d]
                 else:
                     date_published = datetime.strptime(data_json[d]['date_publised'], "%Y-%m-%d %H:%M:%S")
-                    print(start_diaposon.minute, date_published.minute, end_diaposon.minute )
+                    # print(start_diaposon.minute, date_published.minute, end_diaposon.minute )
                     if start_diaposon.minute <= date_published.minute <=end_diaposon.minute and start_diaposon.hour == date_published.hour:
                         data[d]= data_json[d]
                     elif date_published.minute > 50 and start_diaposon.hour == date_published.hour:

@@ -8,9 +8,10 @@ from .req import get_response
 
 
 class Pagination(Mainloop):
-    def __init__(self, url: str, filter_url: str = '') -> None:
+    def __init__(self, url: str, filter_url: str = '', pagination: bool=False) -> None:
         self.url = url
         self.filter_url = filter_url
+        self.pagination = pagination
         self.pagination_pages = []
 
         super().__init__()
@@ -37,8 +38,11 @@ class Pagination(Mainloop):
         for i in links:
             if i.isdigit():
                 max_pag_number = int(i)
-
-        return max_pag_number
+                
+        if self.pagination:
+            return max_pag_number
+        else:
+            return 1
 
     async def _get_list_futures(self, url: str, page_count: int) -> None:
         return [self.mainloop.run_in_executor(None, get_response, f'{url}?page={i}', self.filter_url) for i in range(1, page_count)]
