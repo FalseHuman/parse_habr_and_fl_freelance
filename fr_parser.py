@@ -97,7 +97,8 @@ class Parser():
                         }
                     }
 
-                    ready_dict[counter] = ready_order
+                    if 'час' not in price:
+                        ready_dict[counter] = ready_order
         fl_tasks = fl_parser_link(self.sleep_time)
         fl_file_add = False
         for fl_task in fl_tasks:
@@ -132,8 +133,8 @@ class Parser():
                             'feedback': positive_feedback - negative_feedback
                         }
                     }
-
-            ready_dict[counter] = ready_order
+            if 'час' not in fl_price:
+                ready_dict[counter] = ready_order
         return ready_dict
 
 
