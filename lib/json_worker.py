@@ -81,8 +81,8 @@ class Json_worker:
                     if client_created_acc == '':
                         client_created_acc = '0'
                     feedback = py_dict[data]['client_info']['feedback']
-                    client_name = 'Нет информации о имени' if py_dict[data]['client_info'].get('client_name') is None else py_dict[data]['client_info'].get('client_name')
-                    client_info = '<b>Клиент(лет/отзывов):</b>\n' + client_name + ' ' + client_created_acc + '/' + str(feedback)
+                    client_username_info = 'Нет инфо' if py_dict[data]['client_info'].get('username_info') is None else py_dict[data]['client_info'].get('username_info')
+                    client_info = '<b>Клиент(лет/отзывов):</b>\n' + client_username_info + ' ' + client_created_acc + '/' + str(feedback)
                     task_file_add = 'С приложением' if py_dict[data]['file_add'] else ''
                     task_link = py_dict[data]['task_link']
                     data = {"chat_id": chat_id,
