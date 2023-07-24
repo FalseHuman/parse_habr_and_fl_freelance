@@ -16,7 +16,12 @@ if __name__ == '__main__':
     diaposon_second = 600 # Нужно чтобы корректно работал sleep 10 минут
     while True:
         sleep_time = datetime.datetime.now
-        print('start', sleep_time())
+        start_date = sleep_time()
+        print('start', start_date)
         main(sleep_time)
-        print('sleep', sleep_time())
-        time.sleep(diaposon_second - sleep_time().second)
+        end_date = sleep_time()
+        print('sleep', end_date)
+        difference = end_date - start_date
+        if difference.total_seconds() > 600:
+            diaposon_second = diaposon_second - (difference - diaposon_second)
+        time.sleep(diaposon_second)
