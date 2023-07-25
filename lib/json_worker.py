@@ -92,16 +92,23 @@ class Json_worker:
                     client_info = '<b>Клиент(лет/отзывов):</b>\n' + client_username_info + ' ' + client_created_acc + '/' + str(feedback)
                     task_file_add = 'С приложением' if py_dict[data]['file_add'] else ''
                     task_link = py_dict[data]['task_link']
+                    button_name = 'fl.ru' if  'fl.ru' in task_link else 'freelance.habr.com'
+                    rub_price = 0
+                    
+                    if 'руб' in task_price:
+                        rub_price = task_price.split('руб') [0]
+                        try:
+                            task_price = task_price[:task_price.index('р')] + task_price[task_price.index('С'):]
+                        except ValueError:
+                            task_price = task_price
                     data = {"chat_id": chat_id,
                         "text": task_name+'\n' + task_price +'\n\n'+task_description+'\n\n'+ client_info+ '\n\n' + task_file_add,
                         "parse_mode": 'html',
-                        "reply_markup": json.dumps({"inline_keyboard":[[{"text":"Перейти","url": task_link}]]}),
+                        "reply_markup": json.dumps({"inline_keyboard":[[{"text": button_name,"url": task_link}]]}),
                         "disable_web_page_preview": True
                         }
-                    rub_price = 0
-                    if 'руб' in task_price:
-                        rub_price = task_price.split('руб') [0]
-                    if 'Бюджет: ?' in task_price or self.price_with_strings(rub_price) >= 10000:
+                    
+                    if '?' in task_price or self.price_with_strings(rub_price) >= 10000:
                         requests.post(f'https://api.telegram.org/bot{token}/sendChatAction?chat_id={chat_id}&action=typing')
                         requests.post(
                             f'https://api.telegram.org/bot{token}/sendMessage', data=data
