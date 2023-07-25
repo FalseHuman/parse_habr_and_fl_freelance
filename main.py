@@ -20,8 +20,8 @@ if __name__ == '__main__':
         print('start', start_date)
         try:
             main(sleep_time)
-        except:
-            pass
+        except Exception as e:
+            print(e)
         end_date = sleep_time()
         print('sleep', end_date)
         difference = end_date - start_date
