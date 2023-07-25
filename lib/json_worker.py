@@ -98,7 +98,10 @@ class Json_worker:
                         "reply_markup": json.dumps({"inline_keyboard":[[{"text":"Перейти","url": task_link}]]}),
                         "disable_web_page_preview": True
                         }
-                    if '?' in task_price or self.price_with_strings(task_price) > 10000:
+                    rub_price = 0
+                    if 'руб' in task_price:
+                        rub_price = task_price.split('руб') [0]
+                    if '?' in task_price or self.price_with_strings(rub_price) >= 10000:
                         requests.post(f'https://api.telegram.org/bot{token}/sendChatAction?chat_id={chat_id}&action=typing')
                         requests.post(
                             f'https://api.telegram.org/bot{token}/sendMessage', data=data
@@ -117,9 +120,9 @@ class Json_worker:
                 else:
                     date_published = datetime.strptime(data_json[d]['date_publised'], "%Y-%m-%d %H:%M:%S")
                     # print(start_diaposon.minute, date_published.minute, end_diaposon.minute )
-                    if start_diaposon.minute <= date_published.minute <=end_diaposon.minute and start_diaposon.hour == date_published.hour:
+                    if start_diaposon.minute <= date_published.minute < end_diaposon.minute and start_diaposon.hour == date_published.hour:
                         data[d]= data_json[d]
-                    elif date_published.minute > 50 and start_diaposon.hour == date_published.hour:
+                    elif date_published.minute >= 50 and start_diaposon.hour == date_published.hour:
                         data[d]= data_json[d]
                 data_json[d].pop('fl_true', None) 
             self.dump_dict(data)
