@@ -101,7 +101,7 @@ class Json_worker:
                     rub_price = 0
                     if 'руб' in task_price:
                         rub_price = task_price.split('руб') [0]
-                    if '?' in task_price or self.price_with_strings(rub_price) >= 10000:
+                    if 'Бюджет: ?' in task_price or self.price_with_strings(rub_price) >= 10000:
                         requests.post(f'https://api.telegram.org/bot{token}/sendChatAction?chat_id={chat_id}&action=typing')
                         requests.post(
                             f'https://api.telegram.org/bot{token}/sendMessage', data=data
