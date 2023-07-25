@@ -51,7 +51,14 @@ class Json_worker:
         if not self.filename.endswith('.json'):
             self.filename += '.json'
 
-    def years_with_strings(self, string):
+    def price_with_strings(self, price) -> None:
+        int_price = ''
+        for string in price:
+            if string in '0123456789':
+                int_price += string
+        return int(int_price) if int_price != '' else None
+
+    def years_with_strings(self, string) -> None:
         arr_cr_data = []    
         if 'лет' in string:
             arr_cr_data = string.split('лет')
@@ -91,10 +98,11 @@ class Json_worker:
                         "reply_markup": json.dumps({"inline_keyboard":[[{"text":"Перейти","url": task_link}]]}),
                         "disable_web_page_preview": True
                         }
-                    requests.post(f'https://api.telegram.org/bot{token}/sendChatAction?chat_id={chat_id}&action=typing')
-                    requests.post(
-                        f'https://api.telegram.org/bot{token}/sendMessage', data=data
-                    )
+                    if '?' in task_price or self.price_with_strings(task_price) > 10000:
+                        requests.post(f'https://api.telegram.org/bot{token}/sendChatAction?chat_id={chat_id}&action=typing')
+                        requests.post(
+                            f'https://api.telegram.org/bot{token}/sendMessage', data=data
+                        )
 
     def check_caluclate_parser_time(self, diaposon, sleep_time) -> None:
         zone = 'Europe/Moscow'
