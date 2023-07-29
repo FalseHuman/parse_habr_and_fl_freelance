@@ -1,5 +1,8 @@
 from fr_parser import Parser
-import time, datetime
+import time, datetime, logging
+
+logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s',
+                    level=logging.INFO, filename='main.log')
 
 
 def main(sleep_time) -> None:
@@ -18,12 +21,15 @@ if __name__ == '__main__':
         sleep_time = datetime.datetime.now
         start_date = sleep_time()
         print('start', start_date)
+        logging.info(f'start {str(start_date)}')
         try:
             main(sleep_time)
         except Exception as e:
             print(e)
+            logging.error(e)
         end_date = sleep_time()
         print('sleep', end_date)
+        logging.info(f'sleep {str(end_date)}')
         difference = end_date - start_date
         if difference.total_seconds() > 600:
             diaposon_second = diaposon_second - (difference - diaposon_second)

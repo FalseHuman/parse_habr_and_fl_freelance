@@ -59,12 +59,12 @@ class Json_worker:
         return int(int_price) if int_price != '' else None
 
     def years_with_strings(self, string) -> None:
-        arr_cr_data = []    
-        if 'лет' in string:
-            arr_cr_data = string.split('лет')
-        elif 'год' in string:
-            arr_cr_data = string.split('год')
-    
+        arr_cr_data = []
+        if string is not None:
+            if 'лет' in string:
+                arr_cr_data = string.split('лет')
+            elif 'год' in string:
+                arr_cr_data = string.split('год')
         years = ''
 
         if arr_cr_data != []:
@@ -89,20 +89,29 @@ class Json_worker:
                         client_created_acc = '0'
                     feedback = py_dict[data]['client_info']['feedback']
                     client_username_info = 'Нет инфо' if py_dict[data]['client_info'].get('username_info') is None else py_dict[data]['client_info'].get('username_info')
-                    client_info = '<b>Клиент(лет/отзывов):</b>\n' + client_username_info + ' ' + client_created_acc + '/' + str(feedback)
+                    client_avatar = ' - с фото' if py_dict[data]['client_info'].get('avatar') == True else ''
+                    client_info = '<b>Клиент(лет/отзывов):</b>\n' + client_username_info + client_avatar + ' ' + client_created_acc + '/' + str(feedback)
+                    tags_info = '<b>Тэги:</b>\n' + ' '.join(py_dict[data]['technologies'])
                     task_file_add = 'С приложением' if py_dict[data]['file_add'] else ''
                     task_link = py_dict[data]['task_link']
-                    button_name = 'fl.ru' if  'fl.ru' in task_link else 'freelance.habr.com'
+                    button_name = ''
+                    if  'fl.ru' in task_link:
+                        button_name = 'fl.ru'
+                    elif 'freelance.ru' in task_link:
+                        button_name = 'freelance.ru'
+                    else:
+                        button_name = 'freelance.habr.com'
                     rub_price = 0
                     
-                    if 'руб' in task_price or 'Бюджет: ?' in task_price:
+                    if 'руб' in task_price.lower() or 'Бюджет: ?' in task_price:
                         rub_price = task_price.split('руб') [0] if  'Бюджет: ?' not in task_price else 'Бюджет: 10 000 руб'
                         try:
                             task_price = task_price[:task_price.index('р')] + task_price[task_price.index('С'):] if task_price.count('?') != 2 else task_price
                         except ValueError:
                             task_price = task_price
+                        task_price = task_price.replace('ССрок', 'Срок')
                     data = {"chat_id": chat_id,
-                        "text": task_name+'\n' + task_price +'\n\n'+task_description+'\n\n'+ client_info+ '\n\n' + task_file_add,
+                        "text": task_name+'\n' + task_price +'\n\n'+task_description+'\n\n' +tags_info +'\n\n'+ client_info+ '\n\n' + task_file_add,
                         "parse_mode": 'html',
                         "reply_markup": json.dumps({"inline_keyboard":[[{"text": button_name,"url": task_link}]]}),
                         "disable_web_page_preview": True

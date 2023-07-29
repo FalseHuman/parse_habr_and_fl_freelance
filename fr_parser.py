@@ -11,6 +11,7 @@ from lib.pagination import Pagination
 from lib.json_worker import Json_worker
 from lib.req import get_response
 from fl_parser import fl_parser_link
+from freelance_parser import freelance_ru_parser_link
 
 
 class Parser():
@@ -99,6 +100,7 @@ class Parser():
 
                     if 'час' not in price:
                         ready_dict[counter] = ready_order
+        last_count_fl = list(ready_dict.keys())[-1]
         fl_tasks = fl_parser_link(self.sleep_time)
         fl_file_add = False
         for fl_task in fl_tasks:
@@ -112,12 +114,14 @@ class Parser():
                 fl_file_add = True
             positive_feedback = int(''.join(fl_task_page.find('span', class_='text-8 b-layout__txt_color_6db335').text.split())) if fl_task_page.find('span', class_='text-8 b-layout__txt_color_6db335') else 0
             negative_feedback = int(''.join(fl_task_page.find('span', class_='text-8 b-layout__txt_color_c10600').text.split())) if fl_task_page.find('span', class_='text-8 b-layout__txt_color_c10600') else 0
-            fl_technologies =[tech.text.replace('\n', '').split('/') for tech in fl_task_page.find_all('div', class_='text-5 mb-4 b-layout__txt_padbot_20')]
+            fl_technologies =[' '.join(tech.text.replace('\n', '').split('/')) for tech in fl_task_page.find_all('div', class_='text-5 mb-4 b-layout__txt_padbot_20')]
+            if fl_technologies == []:
+                fl_technologies =[' '.join(tech.text.replace('\n', '').split('/')) for tech in fl_task_page.find_all('div', class_='text-5 mb-4')]
             ready_order = {
                         'task_name': fl_title.text.replace('\n', '').strip() if fl_title else 'Нет информации',
                         'task_link': fl_task,
                         'description': fl_description.text.replace('\n', '').strip() if fl_description else 'Нет информации',
-                        'price': fl_price.replace('ожидает предложений', '?').replace('по договоренности', '?').replace('Дедлайн', 'Срок').replace('дня', '').replace('день', ''),
+                        'price': fl_price.replace('ожидает предложений', '?').replace('по договоренности', '?').replace('Дедлайн', 'Срок').replace('дня', '').replace('день', '').replace('дней', ''),
                         'fl_true': True,
                         'date_publised': ' '.join(fl_date_published.text.replace('\n', '').split()) if fl_date_published else 'Нет информации',
                         'technologies': fl_technologies,
@@ -133,8 +137,51 @@ class Parser():
                             'feedback': positive_feedback - negative_feedback
                         }
                     }
+            last_count_fl += 1
             if 'час' not in fl_price:
-                ready_dict[counter] = ready_order
+                ready_dict[last_count_fl] = ready_order
+
+        last_count = list(ready_dict.keys())[-1]
+        freelance_tasks = freelance_ru_parser_link(self.sleep_time)
+        filter_page = BeautifulSoup(get_response('https://freelance.ru/project/search/pro?c=&c%5B%5D=4&c%5B%5D=696&c%5B%5D=116&c%5B%5D=40&q=&m=or&e=&a=0&a=1&v=0&v=1&f=10000&t=&o=0&o=1&b=').text, 'html.parser')
+        freelance_ru_url = 'https://freelance.ru'
+        default_avatar_freelance = 'https://cdn.freelance.ru/img/ava/male.png'
+        for row in filter_page.find_all('div', class_='project'):
+            url = freelance_ru_url + row.find('a', class_='description')['href']
+            for freelance_task in freelance_tasks:
+                if url == freelance_task:
+                    freelance_title = ' '.join(row.find('h2', class_='title').text.split())
+                    freelance_description = ' '.join(row.find('a', class_='description').text.split())
+                    freelance_technologies = [' '.join(tech.text.split()) for tech in  row.find_all('div', class_='specs-list')]
+                    freelance_cost = ' '.join(row.find('div', class_='cost').text.split()) if row.find('div', class_='cost') else '?'
+                    freelance_term = ' '.join(row.find('div', class_='term').text.split()) if row.find('div', class_='term') else '?'
+                    freelance_price = 'Бюджет: ' + freelance_cost + ' Срок: ' + freelance_term
+                    freelance_term_publish_time = ' '.join(row.find('div', class_='publish-time').text.split()) if row.find('div', class_='publish-time') else 'Нет информации'
+                    freelance_avatar = row.find('img', class_='avatar-xs')['data-src'] if row.find('img', class_='avatar-xs') else False
+                    freelance_avatar_true = True if freelance_avatar != default_avatar_freelance or freelance_avatar == False else False
+                    ready_order = {
+                        'task_name': freelance_title,
+                        'task_link': url,
+                        'description': freelance_description,
+                        'price': freelance_price.replace('Договорная', '?').replace('за', ''), #.replace('дня', '').replace('день', '').replace('дней', ''),
+                        'fl_true': True,
+                        'date_publised': freelance_term_publish_time,
+                        'technologies': freelance_technologies,
+                        'file_add': None,
+                        'client_info': {
+                            'client_name': None,
+                            'avatar': freelance_avatar_true,
+                            'username_link': None,
+                            'username_info': None,
+                            'fl_created_acc': None,
+                            'verification': None,
+                            'orders': None,
+                            'feedback': 0
+                        }
+                    }
+                    last_count += 1
+                    ready_dict[last_count] = ready_order
+
         return ready_dict
 
 
