@@ -34,8 +34,8 @@ def start(message):
     if user_chat_id not in tg_users: 
         tg_users.append(user_chat_id)
         users_chat_ids.dump_dict(tg_users)
-    global processes
-    start_proccess_parsing(processes)
+    # global processes
+    # start_proccess_parsing(processes)
 
 @bot.message_handler(commands=['restart_parser'])
 def restart_parser(message):
