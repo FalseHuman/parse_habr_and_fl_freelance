@@ -1,9 +1,9 @@
+import os
 import json
 from datetime import datetime
 from os import path
 from calculate_parser_time import caluculate_diapason
 from pytz import timezone
-from config import token
 import requests
 
 
@@ -104,7 +104,7 @@ class Json_worker:
                     rub_price = 0
                     
                     if 'руб' in task_price.lower() or 'Бюджет: ?' in task_price:
-                        rub_price = task_price.split('руб') [0] if  'Бюджет: ?' not in task_price else 'Бюджет: 10 000 руб'
+                        rub_price = task_price.split('руб') [0] if  'Бюджет: ?' not in task_price else 'Бюджет: 1000 руб'
                         try:
                             task_price = task_price[:task_price.index('р')] + task_price[task_price.index('С'):] if task_price.count('?') != 2 else task_price
                         except ValueError:
@@ -117,7 +117,7 @@ class Json_worker:
                         "disable_web_page_preview": True
                         }
                     
-                    if self.price_with_strings(rub_price) >= 10000:
+                    if self.price_with_strings(rub_price) >= 1000:
                         requests.post(f'https://api.telegram.org/bot{token}/sendChatAction?chat_id={chat_id}&action=typing')
                         requests.post(
                             f'https://api.telegram.org/bot{token}/sendMessage', data=data
@@ -147,4 +147,4 @@ class Json_worker:
         with open(path.join('orders', 'telegram_chat_id.json'), 'r', encoding='utf-8') as json_file:
                 telegram_ids = json.load(json_file)
                 for telegram_id in telegram_ids:
-                    self.send_message_telegram(token, telegram_id['user_chat_id'], self.filename)
+                    self.send_message_telegram(os.environ.get('token'), telegram_id['user_chat_id'], self.filename)

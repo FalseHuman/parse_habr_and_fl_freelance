@@ -109,7 +109,7 @@ class Parser():
             fl_description = fl_task_page.find('div', class_='b-layout__txt_padbot_20')
             fl_date_published = fl_task_page.find('div', class_='b-layout__txt b-layout__txt_padbot_30 mt-32')
             fl_created_acc = fl_task_page.find('div', class_='mt-8 text-7')
-            fl_price = ' '.join(fl_task_page.find('div', class_='py-32 text-right unmobile flex-shrink-0 ml-auto').text.replace('\n', '').split()) if fl_task_page.find('div', class_='py-32 text-right unmobile flex-shrink-0 ml-auto') else None
+            fl_price = ' '.join(fl_task_page.find('div', class_='py-32 text-right unmobile flex-shrink-0 ml-auto').text.replace('\n', '').split()) if fl_task_page.find('div', class_='py-32 text-right unmobile flex-shrink-0 ml-auto') else 'Бюджет: ? Срок: ?'
             if fl_task_page.find('div', class_='b-layout mt-22 base-attach-class') is not None:
                 fl_file_add = True
             positive_feedback = int(''.join(fl_task_page.find('span', class_='text-8 b-layout__txt_color_6db335').text.split())) if fl_task_page.find('span', class_='text-8 b-layout__txt_color_6db335') else 0
@@ -143,7 +143,7 @@ class Parser():
 
         last_count = list(ready_dict.keys())[-1]
         freelance_tasks = freelance_ru_parser_link(self.sleep_time)
-        filter_page = BeautifulSoup(get_response('https://freelance.ru/project/search/pro?c=&c%5B%5D=4&c%5B%5D=696&c%5B%5D=116&c%5B%5D=40&q=&m=or&e=&a=0&a=1&v=0&v=1&f=10000&t=&o=0&o=1&b=').text, 'html.parser')
+        filter_page = BeautifulSoup(get_response('https://freelance.ru/project/search/pro?c=&c%5B%5D=4&c%5B%5D=696&c%5B%5D=116&c%5B%5D=40&q=&m=or&e=&a=0&a=1&v=0&v=1&f=1000&t=&o=0&o=1&b=').text, 'html.parser')
         freelance_ru_url = 'https://freelance.ru'
         default_avatar_freelance = 'https://cdn.freelance.ru/img/ava/male.png'
         for row in filter_page.find_all('div', class_='project'):

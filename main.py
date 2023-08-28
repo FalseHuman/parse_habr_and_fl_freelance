@@ -8,7 +8,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s',
 def main(sleep_time) -> None:
     p = Parser(
         url='https://freelance.habr.com/tasks',
-        filter_url='categories=development_all_inclusive,development_backend,development_frontend,development_prototyping,development_ios,development_android,development_desktop,development_bots,development_games,development_1c_dev,development_scripts,development_voice_interfaces,development_other,design_sites,design_landings',
+        filter_url='categories=development_all_inclusive,development_backend,development_frontend,development_prototyping,development_ios,development_android,development_desktop,development_bots,development_games,development_1c_dev,development_scripts,development_voice_interfaces,development_other',
         diapason=10,
         sleep_time=sleep_time
         )

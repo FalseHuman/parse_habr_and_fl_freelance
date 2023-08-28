@@ -1,6 +1,5 @@
 import telebot, logging, time, os
 from lib.json_worker import Json_worker
-from config import token
 import subprocess
 import psutil
 
@@ -10,7 +9,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s',
                     level=logging.INFO, filename='bot.log')
 logging.info('Start bot')
 
-bot = telebot.TeleBot(token)
+bot = telebot.TeleBot(os.environ.get('token'))
 
 def kill(proc_pid):
     process = psutil.Process(proc_pid)

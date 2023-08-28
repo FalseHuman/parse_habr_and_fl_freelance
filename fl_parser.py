@@ -6,7 +6,7 @@ from time import mktime
 from filter_rss import filter_rss
 
 def fl_parser_link(sleep_time):
-    categories_parse = ['2', '3&subcategory=172&subcategory=300&&subcategory=283&subcategory=300&subcategory=239&&subcategory=35','5', '23']
+    categories_parse = ['5']
     start_time, end_time = caluculate_diapason(sleep_time(pytz.utc), 10)
     links = []
     for category in categories_parse:
